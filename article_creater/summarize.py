@@ -1,8 +1,10 @@
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain, SimpleSequentialChain
 
-# Agent, Tools
+# Tools
 import asyncio 
+# Tools Type
+from asyncio import Task
 
 # MyLibrary
 from crowler.get_article_info import get_article_info
@@ -19,22 +21,25 @@ def integrate_article_html_contents(articles: List[Article]) -> str:
 
     return integrated_contents
 
-def summarize_html_contents(articles: List[Article]) -> List[Article]:
+
+async def summarize_html_contents_async(articles: List[Article]) -> List[Article]:
     llm = ChatOpenAI(model_name="gpt-4", temperature=0.7)
     chain = LLMChain(llm=llm, prompt=prompt_summarize_each_article)
-    summerized_articles = []
-    # HACK: 並列処理にして実行時間を短縮したい
-    for article in articles:
-        summary = chain.run({"title": article.title, "html_contents": article.html_content})
-        print(f"{article.title}の要約結果: {summary}")
-        summerized_articles.append(Article(title=article.title, html_content=summary))
-    return summerized_articles
 
-def create_chain():
-    llm = ChatOpenAI(model_name="gpt-4", temperature=0.7)
-    chain_make_articles = LLMChain(llm=llm, prompt=prompt_enable_llm_to_make_articles)
-    
+    async def run_chain(article: Article) -> Task[Article]:
+        summary = await chain.arun({"title": article.title, "html_contents": article.html_content})
+        return Article(article.title, summary)  
+
+    tasks = [run_chain(article) for article in articles]
+    return await asyncio.gather(*tasks)
+
+
+def print_articles(articles: List[Article]) -> None:
+    for article in articles:
+        print(f"Title: {article.title} \nPrint_Article: {article.html_content} \n")
+   
 
 if __name__ == '__main__':
     articles = asyncio.run(get_article_info("LangChain"))
-    summarize_html_contents(articles)
+    summarized_articles = asyncio.run(summarize_html_contents_async(articles))
+    print_articles(summarized_articles)
