@@ -24,7 +24,7 @@ async def _get_target_search_link_list(page: Page, search_word: str, max_rank: i
     await search_input.press("Enter")
 
     await page.wait_for_load_state("load")
-    await page.screenshot(path="ss_search_result.png")
+    await page.screenshot(path="temp_debug/images/ss_search_result.png")
 
     search_results = page.locator(".tF2Cxc")
     search_results_links = search_results.locator(".yuRUbf > a")
