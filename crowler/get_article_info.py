@@ -68,11 +68,16 @@ async def _get_page_title_and_content(browser: Browser, page_links: Iterable, ma
     articles = await asyncio.gather(*tasks)
     return articles
 
-async def get_article_info(search_word: str, max_rank: int = 3, max_words: int = 12000) -> List[Article]:
+async def get_article_info(search_word: str, max_rank: int = 3, max_words: int = 5000) -> List[Article]:
+    """
+    max_words: 
+    使用モデルの最大入力トークンを超過しないように指定する。
+    モデルによって最大入力トークン（≒文字数）が変わる。gpt-4モデルで上限8192トークン。
+    """
     async with async_playwright() as playwright:
         browser: Browser = await playwright.chromium.launch(headless=True)
         context: BrowserContext = await browser.new_context()
-        context.set_default_timeout(300000)
+        context.set_default_timeout(30000) # 30,000ms: 30s
         page: Page = await context.new_page()
 
         urls = await _get_target_search_link_list(page, search_word, max_rank)

@@ -11,4 +11,11 @@
 
 # How to use
 
+# Technical ingenuity
+- LangChain
+  - 直接APIを叩かずにLangChainを通して実装することで、拡張性を高めています。
+- Jinja2
+  - 記事生成のテンプレートを一旦GPTに読み込ませる必要があり、ここでAPI使用料が嵩みがち。
+  - そこでJinja2を使用することで読み込ませる量を減らしている。
+
 # Please Contact me
