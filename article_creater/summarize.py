@@ -34,7 +34,7 @@ async def summarize_html_contents_async(articles: List[Article]) -> List[Article
     return await asyncio.gather(*tasks)
 
 
-def print_articles(articles: List[Article]) -> None:
+def _print_articles(articles: List[Article]) -> None:
     for article in articles:
         print(f"Title: {article.title} \nPrint_Article: {article.html_content} \n")
    
@@ -42,4 +42,4 @@ def print_articles(articles: List[Article]) -> None:
 if __name__ == '__main__':
     articles = asyncio.run(get_article_info("LangChain"))
     summarized_articles = asyncio.run(summarize_html_contents_async(articles))
-    print_articles(summarized_articles)
+    _print_articles(summarized_articles)
