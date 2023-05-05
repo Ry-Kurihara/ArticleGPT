@@ -10,8 +10,14 @@ from typing import List
 from playwright.sync_api import Browser, BrowserContext, Page, Locator
 from typing import Iterable
 
+"""
+Objects:
+search_word → SearchArticle
+"""
+
 @dataclass
-class Article:
+class SearchArticle:
+    search_word: str
     title: str
     html_content: str
 
@@ -42,7 +48,7 @@ async def _get_target_search_link_list(page: Page, search_word: str, max_rank: i
     return urls
 
 
-async def _fetch_page_content(page: Page, url: str, max_words: int) -> Article:
+async def _fetch_page_content(page: Page, url: str, search_word: str, max_words: int) -> SearchArticle:
     await page.goto(url)
     # await page.pause()
     title: str = await page.title()
@@ -54,21 +60,21 @@ async def _fetch_page_content(page: Page, url: str, max_words: int) -> Article:
     content = soup.get_text()
     content = " ".join(content.split())
 
-    article = Article(title=title, html_content=content[:max_words])
+    article = SearchArticle(search_word=search_word, title=title, html_content=content[:max_words])
     await page.close()
     return article
 
 
-async def _get_page_title_and_content(browser: Browser, page_links: Iterable, max_words: int) -> List[Article]:
+async def _get_page_title_and_content(browser: Browser, page_links: Iterable, search_word: str, max_words: int) -> List[SearchArticle]:
     tasks = []
     context = await browser.new_context()
     for url in page_links:
         page = await context.new_page()
-        tasks.append(_fetch_page_content(page, url, max_words))
+        tasks.append(_fetch_page_content(page, url, search_word, max_words))
     articles = await asyncio.gather(*tasks)
     return articles
 
-async def get_article_info(search_word: str, max_rank: int = 3, max_words: int = 5000) -> List[Article]:
+async def get_article_info(search_word: str, max_rank: int = 3, max_words: int = 2000) -> List[SearchArticle]:
     """
     max_words: 
     使用モデルの最大入力トークンを超過しないように指定する。
@@ -77,13 +83,13 @@ async def get_article_info(search_word: str, max_rank: int = 3, max_words: int =
     async with async_playwright() as playwright:
         browser: Browser = await playwright.chromium.launch(headless=True)
         context: BrowserContext = await browser.new_context()
-        context.set_default_timeout(30000) # 30,000ms: 30s
+        context.set_default_timeout(60000) # 60,000ms: 60s
         page: Page = await context.new_page()
 
         urls = await _get_target_search_link_list(page, search_word, max_rank)
         print(f"urls: {urls}")
 
-        articles = await _get_page_title_and_content(browser, urls, max_words)
+        articles = await _get_page_title_and_content(browser, urls, search_word, max_words)
         for article in articles:
             print(f"Title: {article.title}\nContent: {article.html_content[:300]}\n\n")
 
