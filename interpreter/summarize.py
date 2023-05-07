@@ -34,7 +34,7 @@ def _output_article(article: SummarizedSearchArticle) -> None:
 
 
 async def _summarize_each_html_contents(articles: List[SearchArticle], summary_word_count: int) -> List[SearchArticle]:
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.7)
+    llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.5)
     chain = LLMChain(llm=llm, prompt=prompt_enable_llm_to_summarize_article(), verbose=True)
 
     async def run_chain(article: SearchArticle) -> Task[SearchArticle]:
@@ -68,9 +68,9 @@ def _organize_integrated_contents(summarized_article: SummarizedSearchArticle) -
     return SummarizedSearchArticle(summarized_article.search_word, summarized_article.title, llm_resp)
 
 
-async def summarize_search_articles(articles: List[SearchArticle], summary_word_count: int = 400) -> SummarizedSearchArticle:
+async def summarize_search_articles(articles: List[SearchArticle], summary_word_count: int = 500) -> SummarizedSearchArticle:
     """
-    TODO: argstrings記述
+    summary_word_count: 記事要約の文字数。この文字数*要約記事数（だいたい3くらい）がLLMに入力される。
     """
     summarized_each_articles = await _summarize_each_html_contents(articles, summary_word_count)
     _print_articles(summarized_each_articles)
