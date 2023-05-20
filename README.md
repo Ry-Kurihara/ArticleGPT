@@ -1,6 +1,8 @@
 # Draft: ArticleGPT: Automatic article generation tool.
 
-![articlegpt-log1](https://user-images.githubusercontent.com/43668533/235345177-3c42ca4a-f268-4393-9070-69800f93faf8.png)
+<p align="center">
+  <img src="https://github.com/Ry-Kurihara/ArticleGPT/assets/43668533/812ef014-5d37-48c0-95c7-be4c6f96bd80" />
+</p>
 
 ## Simple discription
 記事の自動生成ツールです。Enterボタン1ポチで特定の話題に対するまとめ記事を生成できます。
