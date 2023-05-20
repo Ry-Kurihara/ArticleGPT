@@ -60,14 +60,14 @@ def _organize_integrated_contents(summarized_article: SummarizedSearchArticle) -
     llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.7, request_timeout=180)
     prompt_class = Prompt2chBase()
     prompt = prompt_class.prompt_enable_llm_to_convert_format_to_2ch()
-    chain_input = prompt_class.chain_input(summarized_article.search_word, summarized_article.contents, "nan_j", 20)
+    chain_input = prompt_class.chain_input(summarized_article.search_word, summarized_article.contents, "nan_j", 20) # HACK: commentの数はmainモジュールのargsparseクラスから取ってくる
     chain = LLMChain(llm=llm, prompt=prompt, verbose=True)
     llm_resp = chain.run(chain_input)
     # TODO: memoryでこのタイトルを考えてくださいを実現する
     return SummarizedSearchArticle(summarized_article.search_word, summarized_article.title, llm_resp)
 
 
-async def summarize_search_articles(articles: List[SearchArticle], summary_word_count: int = 500) -> SummarizedSearchArticle:
+async def summarize_search_articles(articles: List[SearchArticle], summary_word_count: int = 700) -> SummarizedSearchArticle:
     """
     summary_word_count: 記事要約の文字数。この文字数*要約記事数（だいたい3くらい）がLLMに入力される。
     """
