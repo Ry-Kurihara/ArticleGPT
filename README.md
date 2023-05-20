@@ -18,6 +18,12 @@ python main.py 今日の天気
 ```
 
 # How to test?
+## ALL
+```sh 
+python -m pytest -v ./
+```
+
+## Each module
 ```sh 
 python -m pytest -v crowler/
 ```

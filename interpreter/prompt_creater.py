@@ -53,9 +53,10 @@ class Prompt2chBase:
         else:
             raise ValueError(f"board_type: {board_type} is not supported.")
     
-    def chain_input_dict(self, search_word: str, integrated_summary: str, board_type: str) -> dict[str]:
+    def chain_input(self, search_word: str, integrated_summary: str, board_type: str = "nan_j", comments_count: int = 10) -> dict[str]:
         return {
             "search_word": search_word,
             "integrated_summary": integrated_summary,
-            "board_type_details": self.describe_details_of_board_type(board_type)
+            "board_type_details": self.describe_details_of_board_type(board_type),
+            "comments_count": comments_count,
         }

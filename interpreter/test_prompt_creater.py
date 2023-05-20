@@ -10,10 +10,11 @@ def test_prompt():
 def test_prompt_enable_llm_to_convert_format_to_2ch():
     prompt_class = Prompt2chBase()
     actual_chat_pmt = prompt_class.prompt_enable_llm_to_convert_format_to_2ch()
-    assert set(actual_chat_pmt.input_variables) == set(['search_word', 'integrated_summary', 'board_type_details'])
+    assert set(actual_chat_pmt.input_variables) == set(['search_word', 'integrated_summary', 'board_type_details', 'comments_count'])
 
-def test_chain_input_dict():
+def test_chain_input_if_arg_num_is_correct():
+    # chain_input_dictの引数が、(sys_pmtのvariables + human_pmtのvariables)と一致するか
     prompt_class = Prompt2chBase()
-    actual_dict = prompt_class.chain_input_dict("test_search_word", "test_integrated_summary", "nan_j")
-    actual_dict_keys = set(actual_dict.keys())
-    assert actual_dict_keys == set(["search_word", "integrated_summary", "board_type_details"])
+    actual_args = set(prompt_class.chain_input("test_search_word", "test_integrated_summary", "nan_j", 20).keys())
+    expected_args = set(prompt_class.prompt_enable_llm_to_convert_format_to_2ch().input_variables) 
+    assert actual_args == expected_args

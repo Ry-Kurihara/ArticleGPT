@@ -1,5 +1,5 @@
 {
     "_type": "prompt",
-    "input_variables": ["board_type_details"],
+    "input_variables": ["board_type_details", "comments_count"],
     "template_path": "interpreter/my_prompts/2ch_system.txt"
 }
