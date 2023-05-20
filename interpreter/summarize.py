@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from asyncio import Task
 
 # MyLibrary
-from interpreter.prompt_creater import prompt_enable_llm_to_summarize_article, prompt_enable_llm_to_convert_format_to_2ch
+from interpreter.prompt_creater import prompt_enable_llm_to_summarize_article, Prompt2chBase
 # MyLibrary_Type
 from typing import List
 from crowler.get_article_info import SearchArticle
@@ -28,9 +28,6 @@ class SummarizedSearchArticle:
 def _print_articles(articles: List[SearchArticle]) -> None:
     for article in articles:
         print(f"Search_Word: {article.search_word} \nTitle: {article.title} \nPrint_Article: {article.html_content} \n")
-
-def _output_article(article: SummarizedSearchArticle) -> None:
-    pass
 
 
 async def _summarize_each_html_contents(articles: List[SearchArticle], summary_word_count: int) -> List[SearchArticle]:
@@ -61,9 +58,11 @@ def _integrate_search_articles(articles: List[SearchArticle]) -> SummarizedSearc
 
 def _organize_integrated_contents(summarized_article: SummarizedSearchArticle) -> SummarizedSearchArticle:
     llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.7, request_timeout=180)
-    prompt = prompt_enable_llm_to_convert_format_to_2ch()
+    prompt_class = Prompt2chBase()
+    prompt = prompt_class.prompt_enable_llm_to_convert_format_to_2ch()
+    chain_input = prompt_class.chain_input_dict(summarized_article.search_word, summarized_article.contents, "nan_j")
     chain = LLMChain(llm=llm, prompt=prompt, verbose=True)
-    llm_resp = chain.run({"search_word": summarized_article.search_word, "integrated_summary": summarized_article.contents})
+    llm_resp = chain.run(chain_input)
     # TODO: memoryでこのタイトルを考えてくださいを実現する
     return SummarizedSearchArticle(summarized_article.search_word, summarized_article.title, llm_resp)
 

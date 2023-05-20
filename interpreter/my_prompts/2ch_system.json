@@ -1,0 +1,5 @@
+{
+    "_type": "prompt",
+    "input_variables": ["board_type_details"],
+    "template_path": "interpreter/my_prompts/2ch_system.txt"
+}

@@ -8,10 +8,29 @@
 # DEMO
 
 # Features
+- crowler
+- interpreter
+- render
 
-# How to use
+# How to use?
+```sh 
+python main.py 今日の天気
+```
 
-# Technical ingenuity
+# How to test?
+```sh 
+python -m pytest -v crowler/
+```
+
+```sh 
+python -m pytest -v interpreter/
+```
+
+```sh
+python -m pytest -v render/
+```
+
+# Ingenuity
 - LangChain
   - 直接APIを叩かずにLangChainを通して実装することで、拡張性を高めています。
 - Jinja2
