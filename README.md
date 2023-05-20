@@ -1,13 +1,11 @@
-# Draft: ArticleGPT: Automatic article generation tool.
-
 <p align="center">
-  <img src="https://github.com/Ry-Kurihara/ArticleGPT/assets/43668533/812ef014-5d37-48c0-95c7-be4c6f96bd80" />
+  <img src="https://github.com/Ry-Kurihara/ArticleGPT/assets/43668533/812ef014-5d37-48c0-95c7-be4c6f96bd80" alt="ArticleGPT" />
 </p>
 
-## Simple discription
+# Simple discription
 記事の自動生成ツールです。Enterボタン1ポチで特定の話題に対するまとめ記事を生成できます。
 
-# DEMO
+# Demo
 
 # Features
 - crowler
