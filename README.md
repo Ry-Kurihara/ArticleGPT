@@ -7,7 +7,7 @@
 ※ 開発中のため動作しない環境が多いと思われます。コードの参考程度でお願いしますmm
 
 # Instruction
-https://qiita.com/Ryku
+https://qiita.com/Ryku/items/939287c5f500c60dbac9
 
 # How to use?
 ```sh 
