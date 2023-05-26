@@ -1,0 +1,5 @@
+{
+    "_type": "prompt",
+    "input_variables": ["personality", "comments_count"],
+    "template_path": "interpreter/my_prompts/conversation.txt"
+}

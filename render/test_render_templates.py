@@ -1,7 +1,6 @@
 import os
 import pytest
-from unittest.mock import patch, mock_open
-from render.render_templates import Format2chSummarizedSearchArticle, render_summarized_search_article, render_specified_tpl_path
+from render.render_templates import SecondChFormatter, QiitaFormatter
 from interpreter.summarize import SummarizedSearchArticle
 
 
@@ -15,26 +14,48 @@ def summarized_article():
     return article
 
 
-def test_Format2chSummarizedSearchArticle_render(summarized_article):
-    renderer = Format2chSummarizedSearchArticle(summarized_article)
-    renderer.write_tpl_from_object()
+def test_2ch_formatter(summarized_article):
+    output_dir = "2ch"
+    renderer = SecondChFormatter(output_dir)
+    file_name = summarized_article.title
+    renderer.write_tpl_from_object(summarized_article, file_name)
 
     # tplファイルが作成されているか
-    tpl_file_path = f"render/output/2ch/{summarized_article.title}.html.tpl"
+    tpl_file_path = f"render/output/{output_dir}/{file_name}.html.tpl"
     assert os.path.exists(tpl_file_path)
 
     # tplファイルがレンダリングされてhtmlファイルが生成されているか
-    renderer.render()
-    html_file_path = f"render/output/2ch/{summarized_article.title}.html"
+    renderer.render(file_name)
+    html_file_path = f"render/output/{output_dir}/{file_name}.html"
     assert os.path.exists(html_file_path)
 
     os.remove(html_file_path)
     os.remove(tpl_file_path)
 
 
-def test_render_specified_tpl_path(summarized_article):
-    """
-    mockのbuiltin.open環境にsummarized_articleから作成されるtplオブジェクトを作成する
-    そのmock環境でrenderされて正常なhtmlファイルが作成されるか確認する
-    """
+def test_qiita_formatter(summarized_article):
+    output_dir = "qiita"
+    renderer = QiitaFormatter(output_dir)
+    file_name = summarized_article.title
+    renderer.write_tpl_from_object(summarized_article, file_name)
 
+    # tplファイルが作成されているか
+    tpl_file_path = f"render/output/{output_dir}/{file_name}.html.tpl"
+    assert os.path.exists(tpl_file_path)
+
+    # tplファイルがレンダリングされてhtmlファイルが生成されているか
+    renderer.render(file_name)
+    html_file_path = f"render/output/{output_dir}/{file_name}.html"
+    assert os.path.exists(html_file_path)
+
+    os.remove(html_file_path)
+    os.remove(tpl_file_path)
+
+
+def test_qiita_with_specified_path():
+    html_file_path = f"render/output/tests/for_test.html"
+    os.remove(html_file_path)
+
+    renderer = QiitaFormatter(output_dir="tests")
+    renderer.render("for_test")
+    assert os.path.exists(html_file_path)

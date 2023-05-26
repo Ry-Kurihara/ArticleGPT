@@ -3,7 +3,7 @@ from argparse import ArgumentParser, Namespace
 
 from crowler.get_article_info import get_article_info
 from interpreter.summarize import summarize_search_articles
-from render.render_templates import render_summarized_search_article, render_specified_tpl_path
+from render.render_templates import render_summarized_search_article
 
 
 def get_args() -> Namespace:
@@ -16,9 +16,12 @@ def get_args() -> Namespace:
 
 if __name__ == '__main__':
     args = get_args()
+    # crowler
     search_articles = asyncio.run(get_article_info(args.search_word))
+
+    # interpreter
     sumarized = asyncio.run(summarize_search_articles(search_articles))
+
+    # render
     render_summarized_search_article(sumarized)
-    # render_specified_tpl_path(f"Summary_of_{search_word}")
-    
     

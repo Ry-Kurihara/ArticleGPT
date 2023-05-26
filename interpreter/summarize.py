@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from asyncio import Task
 
 # MyLibrary
-from interpreter.prompt_creater import prompt_enable_llm_to_summarize_article, Prompt2chBase
+from interpreter.prompt import summarize_pmt, ConversationPrompt
 # MyLibrary_Type
 from typing import List
 from crowler.get_article_info import SearchArticle
@@ -32,7 +32,7 @@ def _print_articles(articles: List[SearchArticle]) -> None:
 
 async def _summarize_each_html_contents(articles: List[SearchArticle], summary_word_count: int) -> List[SearchArticle]:
     llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.5)
-    chain = LLMChain(llm=llm, prompt=prompt_enable_llm_to_summarize_article(), verbose=True)
+    chain = LLMChain(llm=llm, prompt=summarize_pmt(), verbose=True)
 
     async def run_chain(article: SearchArticle) -> Task[SearchArticle]:
         summary = await chain.arun({"title": article.title, "html_contents": article.html_content, "word_count": summary_word_count})
@@ -58,9 +58,9 @@ def _integrate_search_articles(articles: List[SearchArticle]) -> SummarizedSearc
 
 def _organize_integrated_contents(summarized_article: SummarizedSearchArticle) -> SummarizedSearchArticle:
     llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.7, request_timeout=180)
-    prompt_class = Prompt2chBase()
-    prompt = prompt_class.prompt_enable_llm_to_convert_format_to_2ch()
-    chain_input = prompt_class.chain_input(summarized_article.search_word, summarized_article.contents, "nan_j", 20) # HACK: commentの数はmainモジュールのargsparseクラスから取ってくる
+    prompt_class = ConversationPrompt()
+    prompt = prompt_class.pmt_tmpl()
+    chain_input = prompt_class.variables(summarized_article.search_word, summarized_article.contents, "intelligence", 10) # HACK: commentの数はmainモジュールのargsparseクラスから取ってくる
     chain = LLMChain(llm=llm, prompt=prompt, verbose=True)
     llm_resp = chain.run(chain_input)
     # TODO: memoryでこのタイトルを考えてくださいを実現する

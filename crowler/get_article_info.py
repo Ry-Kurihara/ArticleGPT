@@ -68,6 +68,7 @@ async def _fetch_page_content(page: Page, url: str, search_word: str, max_words:
 async def _get_page_title_and_content(browser: Browser, page_links: Iterable, search_word: str, max_words: int) -> List[SearchArticle]:
     tasks = []
     context = await browser.new_context()
+    context.set_default_timeout(120000) # 120,000ms: 120s
     for url in page_links:
         page = await context.new_page()
         tasks.append(_fetch_page_content(page, url, search_word, max_words))
