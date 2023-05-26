@@ -14,6 +14,8 @@ https://qiita.com/Ryku/items/939287c5f500c60dbac9
 python main.py 今日の天気
 ```
 
+`render/output/qiita/Summary_of_今日の天気.html`に記事が生成されます。
+
 # How to test?
 ## ALL
 ```sh 
