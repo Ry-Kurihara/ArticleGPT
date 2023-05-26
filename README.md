@@ -3,14 +3,11 @@
 </p>
 
 # Simple discription
-記事の自動生成ツールです。Enterボタン1ポチで特定の話題に対するまとめ記事を生成できます。
+記事の自動生成ツールです。Enterボタン1ポチで特定の話題に対するまとめ記事を生成できます。  
+※ 開発中のため動作しない環境も多いと思います。あくまでコードを参考にする程度でお願いします。
 
-# Demo
-
-# Features
-- crowler
-- interpreter
-- render
+# Instruction
+https://qiita.com/Ryku
 
 # How to use?
 ```sh 
@@ -36,11 +33,42 @@ python -m pytest -v interpreter/
 python -m pytest -v render/
 ```
 
+# Features
+`crowler`、`interpreter`、`render`の主要3モジュールの構成で動いています。
+
+- crowler
+  - コマンドライン引数で指定されたワードを元に、Google検索結果を取得します。
+  - 上位X件の結果を取得し、各記事のHTML文章を見やすい形に解析して次の`interpreter`モジュールに渡します。
+- interpreter
+  - `crowler`モジュールから渡されたHTML文章を元に、LangChainを使用して会話形式の文章を生成します。
+  - 生成された文章は、`render`モジュールに渡されます。
+- render
+  - `interpreter`モジュールから渡された文章を元に、Jinja2を使用して各種サイトに投稿できる状態のHTML文章を生成します。
+
 # Ingenuity
+- BeautifulSoup
+  - `crowler`モジュールでは、HTML文章の解析にBeautifulSoupを使用しています。
 - LangChain
+  - `interpreter`モジュールでは、LangChainが使用されています。 
   - 直接APIを叩かずにLangChainを通して実装することで、拡張性を高めています。
 - Jinja2
-  - 記事生成のテンプレートを一旦GPTに読み込ませる必要があり、ここでAPI使用料が嵩みがち。
-  - そこでJinja2を使用することで読み込ませる量を減らしている。
+  - テンプレートエンジンとして`render`モジュールにJinja2を使用しています。
+  - `render`モジュールのカスタマイズ次第で、さまざまな出力形式に対応できます。
 
-# Please Contact me
+# Contact
+```
+　／￣＼
+○ ／￣￣￣＼ヘ
+　 /・　 ・　 ＼>
+／￣￣￣＼　　 Ｖ|
+｜ ――― ｜　　｜|
+＼＿＿＿／　　 ∧|
+　　＼　　　　／〉
+　　　￣￣￣￣￣
+　　ヽ(´･ω･)ﾉ
+　　　 |　 /
+　　　 UU
+うっせぇ、アンコウ投げんぞ!
+```
+
+https://twitter.com/ryku_data
