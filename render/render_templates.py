@@ -59,7 +59,7 @@ class QiitaFormatter(BaseFormatter):
 
 
 def render_summarized_search_article(article: SummarizedSearchArticle):
-    render = QiitaFormatter("qiita") # CHANGE: 生成したい記事タイプによってここを変更する運用にしている
+    render = SecondChFormatter("2ch") # CHANGE: 生成したい記事タイプによってここを変更する運用にしている
     file_name = article.title
     render.write_tpl_from_object(article, file_name)
     render.render(file_name)
