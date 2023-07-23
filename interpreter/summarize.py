@@ -60,7 +60,7 @@ def _organize_integrated_contents(summarized_article: SummarizedSearchArticle) -
     llm = ChatOpenAI(model_name="gpt-4", temperature=0.7, request_timeout=180)
     prompt_class = ConversationPrompt()
     prompt = prompt_class.pmt_tmpl()
-    chain_input = prompt_class.variables(summarized_article.search_word, summarized_article.contents, "nan_j", 20) # HACK: commentの数はmainモジュールのargsparseクラスから取ってくる
+    chain_input = prompt_class.variables(summarized_article.search_word, summarized_article.contents, "nan_j", 15) # HACK: commentの数はmainモジュールのargsparseクラスから取ってくる
     chain = LLMChain(llm=llm, prompt=prompt, verbose=True)
     llm_resp = chain.run(chain_input)
     # TODO: memoryでこのタイトルを考えてくださいを実現する
