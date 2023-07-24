@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from asyncio import Task
 
 # MyLibrary
-from interpreter.prompt import summarize_pmt, ConversationPrompt
+from interpreter.prompt import summarize_pmt, MakeConversationPrompt, MakeTitlePrompt
 # MyLibrary_Type
 from typing import List
 from crowler.get_article_info import SearchArticle
@@ -24,6 +24,10 @@ class SummarizedSearchArticle:
     title: str
     contents: str
 
+@dataclass
+class IntegratedSearchArticle:
+    search_word: str
+    contents: str
 
 def _print_articles(articles: List[SearchArticle]) -> None:
     for article in articles:
@@ -42,29 +46,39 @@ async def _summarize_each_html_contents(articles: List[SearchArticle], summary_w
     return await asyncio.gather(*tasks)
 
 
-def _integrate_search_articles(articles: List[SearchArticle]) -> SummarizedSearchArticle:
+def _integrate_search_articles(articles: List[SearchArticle]) -> IntegratedSearchArticle:
     integrated_contents = ""
     search_word = articles[0].search_word # 全て同じsearch_wordのためどこからとっても良い
     for i, article in enumerate(articles):
         integrated_contents += f"rank{i+1}_title {article.title}:\n"
         integrated_contents += f"{article.html_content}\n\n"
-    summarized_article = SummarizedSearchArticle(
+    summarized_article = IntegratedSearchArticle(
         search_word=search_word,
-        title=f"Summary_of_{search_word}",
         contents=integrated_contents
     )
     return summarized_article
 
 
-def _organize_integrated_contents(summarized_article: SummarizedSearchArticle) -> SummarizedSearchArticle:
+def _organize_integrated_contents(integrated_search_article: IntegratedSearchArticle) -> SummarizedSearchArticle:
     llm = ChatOpenAI(model_name="gpt-4", temperature=0.7, request_timeout=180)
-    prompt_class = ConversationPrompt()
+    prompt_class = MakeConversationPrompt()
     prompt = prompt_class.pmt_tmpl()
-    chain_input = prompt_class.variables(summarized_article.search_word, summarized_article.contents, "nan_j", 15) # HACK: commentの数はmainモジュールのargsparseクラスから取ってくる
+    chain_input = prompt_class.variables(integrated_search_article.search_word, integrated_search_article.contents, "nan_j", 15) # HACK: commentの数はmainモジュールのargsparseクラスから取ってくる
     chain = LLMChain(llm=llm, prompt=prompt, verbose=True)
     llm_resp = chain.run(chain_input)
-    # TODO: memoryでこのタイトルを考えてくださいを実現する
-    return SummarizedSearchArticle(summarized_article.search_word, summarized_article.title, llm_resp)
+    llm_title = _make_title_from_contents(llm_resp)
+    return SummarizedSearchArticle(integrated_search_article.search_word, llm_title, llm_resp)
+
+
+def _make_title_from_contents(contents: str) -> str:
+    llm = ChatOpenAI(model_name="gpt-4", temperature=0.7, request_timeout=180)
+    prompt_class = MakeTitlePrompt()
+    prompt = prompt_class.pmt_tmpl()
+    chain_input = prompt_class.variables(article_contents=contents)
+    chain = LLMChain(llm=llm, prompt=prompt, verbose=True)
+    llm_resp = chain.run(chain_input)
+    print(f"タイトルは{llm_resp}です。")
+    return llm_resp
 
 
 async def summarize_search_articles(articles: List[SearchArticle], summary_word_count: int = 700) -> SummarizedSearchArticle:

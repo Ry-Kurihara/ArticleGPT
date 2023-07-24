@@ -7,7 +7,7 @@ from langchain.prompts.chat import (
 from langchain.prompts import load_prompt
 
 
-class ConversationPrompt:
+class MakeConversationPrompt:
     # prompt_tamplateとvariablesの組み合わせを定義する
     def pmt_tmpl(self) -> ChatPromptTemplate:
         sys_pmt = SystemMessagePromptTemplate(prompt = load_prompt("interpreter/my_prompts/conversation.json"))
@@ -28,6 +28,32 @@ class ConversationPrompt:
             "comments_count": comments_count,
         }
 
+class MakeTitlePrompt:
+    def pmt_tmpl(self) -> ChatPromptTemplate:
+        sys_template = """
+            以下の記事本文に関して、記事のタイトルを決定してください。
+            文字数は25文字以上55文字以下を厳守してください。
+            出力はタイトル文字列のみで大丈夫です。
+
+            タイトル例：
+            1. iPhoneでSONYのヘッドホン使うと音劣化したりする？
+            2. なぜ、日本のヘッドホンは海外で人気がないのか？
+            3. ヘッドホンの音質を変えるイコライザーの使い方
+            4. 第3世代AirPodsは実際どんな感じ？ AirPods Proと比較しての音質や機能の違いまとめ
+        """
+        human_template = """
+            記事本文:
+            {article_contents}
+        """
+        human_pmt = HumanMessagePromptTemplate.from_template(human_template)
+        sys_pmt = SystemMessagePromptTemplate.from_template(sys_template)
+        chat_pmt = ChatPromptTemplate.from_messages([sys_pmt, human_pmt])
+        return chat_pmt
+    
+    def variables(self, article_contents: str) -> dict[str]:
+        return {
+            "article_contents": article_contents,
+        }
 
 def summarize_pmt() -> ChatPromptTemplate:
     sys_template = "あなたは優秀なWeb記事の要約者です。入力された記事内容を元に{word_count}文字程度の文章に要約する天才です。"
