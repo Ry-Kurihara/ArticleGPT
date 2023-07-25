@@ -77,11 +77,10 @@ def _make_title_from_contents(contents: str) -> str:
     chain_input = prompt_class.variables(article_contents=contents)
     chain = LLMChain(llm=llm, prompt=prompt, verbose=True)
     llm_resp = chain.run(chain_input)
-    print(f"タイトルは{llm_resp}です。")
     return llm_resp
 
 
-async def summarize_search_articles(articles: List[SearchArticle], summary_word_count: int = 700) -> SummarizedSearchArticle:
+async def summarize_search_articles(articles: List[SearchArticle], summary_word_count: int = 1000) -> SummarizedSearchArticle:
     """
     summary_word_count: 記事要約の文字数。この文字数*要約記事数（だいたい3くらい）がLLMに入力される。
     """

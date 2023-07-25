@@ -16,6 +16,15 @@ python main.py 今日の天気
 
 `render/output/qiita/Summary_of_今日の天気.html`に記事が生成されます。
 
+## WP投稿を実行する場合
+以下コマンドを実行して必要な環境変数を設定してください。
+WP_AUTH_PASSは`ダッシュボード → ユーザー → アプリケーションパスワード`より発行できます。
+
+```sh
+export WP_AUTH_USER=xxxxx
+export WP_AUTH_PASS=xxxxx
+```
+
 # How to test?
 ## ALL
 ```sh 
@@ -44,6 +53,11 @@ python -m pytest -v render/
 - interpreter
   - `crowler`モジュールから渡されたHTML文章を元に、LangChainを使用して会話形式の文章を生成します。
   - 生成された文章は、`render`モジュールに渡されます。
+  - Input
+    - 要約：検索結果の取得文字数（default: 2000）* 3記事 6000char
+    - 会話変換：要約結果（default: 1000）* 3記事 3000char
+    - タイトル決定：会話形式の文章（almost: 1000） 1000char
+    - Total: 10000char（GPT4: $0.3, GPT3.5-16K: $0.03）
 - render
   - `interpreter`モジュールから渡された文章を元に、Jinja2を使用して各種サイトに投稿できる状態のHTML文章を生成します。
 
