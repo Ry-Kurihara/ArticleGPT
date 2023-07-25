@@ -17,6 +17,7 @@
 <figure class="speech-icon"><img class="speech-icon-image" src="https://earsoku.com/wp-content/uploads/2020/03/AndEarTrans.png" alt="" /></figure>
 </div>
 <div class="speech-balloon">
+（イヤ速ロボ）
 {{ article_review }}
 </div>
 </div>

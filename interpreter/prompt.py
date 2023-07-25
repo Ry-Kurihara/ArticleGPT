@@ -68,7 +68,11 @@ def summarize_pmt() -> ChatPromptTemplate:
 
 
 def get_personality_details(personality: str) -> str:
-    if personality == "nan_j":
+    if personality == "ordinary":
+        return """
+            特に指定はありません。一般的な喋り言葉でお願いします。
+        """
+    elif personality == "nan_j":
         return """
             コメントの全て（最後のレビューコメントを除く）で以下を厳守してください。
             1人称: ワイ

@@ -35,7 +35,7 @@ def _print_articles(articles: List[SearchArticle]) -> None:
 
 
 async def _summarize_each_html_contents(articles: List[SearchArticle], summary_word_count: int) -> List[SearchArticle]:
-    llm = ChatOpenAI(model_name="gpt-4", temperature=0.5)
+    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.5)
     chain = LLMChain(llm=llm, prompt=summarize_pmt(), verbose=True)
 
     async def run_chain(article: SearchArticle) -> Task[SearchArticle]:
@@ -63,7 +63,7 @@ def _organize_integrated_contents(integrated_search_article: IntegratedSearchArt
     llm = ChatOpenAI(model_name="gpt-4", temperature=0.7, request_timeout=180)
     prompt_class = MakeConversationPrompt()
     prompt = prompt_class.pmt_tmpl()
-    chain_input = prompt_class.variables(integrated_search_article.search_word, integrated_search_article.contents, "nan_j", 15) # HACK: commentの数はmainモジュールのargsparseクラスから取ってくる
+    chain_input = prompt_class.variables(integrated_search_article.search_word, integrated_search_article.contents, "ordinary", 15) # HACK: commentの数はmainモジュールのargsparseクラスから取ってくる
     chain = LLMChain(llm=llm, prompt=prompt, verbose=True)
     llm_resp = chain.run(chain_input)
     llm_title = _make_title_from_contents(llm_resp)
