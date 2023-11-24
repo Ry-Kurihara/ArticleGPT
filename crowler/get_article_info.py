@@ -25,13 +25,15 @@ async def _get_target_search_link_list(page: Page, search_word: str, max_rank: i
     await page.goto("https://www.google.com")
 
     print(f"starting search for: {search_word}")
-    search_input: Locator = page.locator('.gLFyf')
+    search_input: Locator = page.locator('.gLFyf') # Google検索入力欄のセレクタ（class属性）
     await search_input.type(search_word)
     await search_input.press("Enter")
 
     await page.wait_for_load_state("load")
     await page.screenshot(path="temp_debug/images/ss_search_result.png")
 
+    # TODO: 新しいセレクタ待機ロジック: GoogleのHTML構造が変わったのか、既存の処理ではセレクタが見つからない
+    await page.wait_for_selector(".tF2Cxc", timeout=10000)  # 10秒でタイムアウト
     search_results = page.locator(".tF2Cxc")
     search_results_links = search_results.locator(".yuRUbf > a")
 
