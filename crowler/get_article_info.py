@@ -1,4 +1,4 @@
-import asyncio
+import asyncio, os, requests
 from dataclasses import dataclass
 
 # playwright&html_parser
@@ -21,32 +21,26 @@ class SearchArticle:
     title: str
     html_content: str
 
-async def _get_target_search_link_list(page: Page, search_word: str, max_rank: int) -> List[str]:
-    await page.goto("https://www.google.com")
 
-    print(f"starting search for: {search_word}")
-    search_input: Locator = page.locator('.gLFyf') # Google検索入力欄のセレクタ（class属性）
-    await search_input.type(search_word)
-    await search_input.press("Enter")
-
-    await page.wait_for_load_state("load")
-    await page.screenshot(path="temp_debug/images/ss_search_result.png")
-
-    # TODO: 新しいセレクタ待機ロジック: GoogleのHTML構造が変わったのか、既存の処理ではセレクタが見つからない
-    await page.wait_for_selector(".tF2Cxc", timeout=10000)  # 10秒でタイムアウト
-    search_results = page.locator(".tF2Cxc")
-    search_results_links = search_results.locator(".yuRUbf > a")
-
+async def _get_target_search_link_list(search_word: str, max_rank: int) -> List[str]:
+    """
+    max_rank: Google検索結果の上位何件を取得するか。10以下を指定すること。10位以降は2ページ目以降の検索結果になるが、そのページ処理は未実装。
+    Googleの検索結果の構造に依存すると、GoogleのHTML構造（セレクタ）が変わった時にエラーになる。そのため、そういった依存をなくすために、Google Custom Search APIを使う。
+    TODO: まだ検索結果が手動でやってる場合と比べて違和感がある。CSEコンソールで色々改善を試してみる。
+    参考: https://qiita.com/kingpanda/items/54043eddcf09699ceabc
+    """
+    api_key = os.environ["CSE_API_KEY"]
+    cse_id = os.environ["CSE_ID"]
+    query = search_word
+    
     urls = []
-    for i in range(max_rank):
-        try:
-            link = search_results_links.nth(i)
-            url = await link.get_attribute("href")
-            urls.append(url)
-        except Exception as e:
-            print(f"Error getting the link at index {i}: {e}")
-
-    await page.close()
+    print(f"start searching for: {search_word}")
+    response = requests.get(
+        f"https://www.googleapis.com/customsearch/v1?key={api_key}&cx={cse_id}&q={query}"
+    )
+    results = response.json()
+    for item in results.get("items", [])[:max_rank]:
+        urls.append(item["link"])
     return urls
 
 
@@ -83,17 +77,21 @@ async def get_article_info(search_word: str, max_rank: int = 3, max_words: int =
     使用モデルの最大入力トークンを超過しないように指定する。
     モデルによって最大入力トークン（≒文字数）が変わる。gpt-4モデルで上限8192トークン。
     """
+    urls = await _get_target_search_link_list(search_word, max_rank)
+    print(f"target_urls: {urls}")
+
     async with async_playwright() as playwright:
         browser: Browser = await playwright.chromium.launch(headless=True)
         context: BrowserContext = await browser.new_context()
         context.set_default_timeout(60000) # 60,000ms: 60s
-        page: Page = await context.new_page()
-
-        urls = await _get_target_search_link_list(page, search_word, max_rank)
-        print(f"urls: {urls}")
 
         articles = await _get_page_title_and_content(browser, urls, search_word, max_words)
         for article in articles:
             print(f"Title: {article.title}\nContent: {article.html_content[:300]}\n\n")
 
         return articles
+    
+
+if __name__ == '__main__':
+    # for debug
+    asyncio.run(_get_target_search_link_list("今日の天気 静岡", 3))

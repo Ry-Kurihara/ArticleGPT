@@ -1,0 +1,5 @@
+export CSE_API_KEY="your_api_key"
+export CSE_ID="your_cse_id"
+export OPENAI_API_KEY="your_openai_api_key"
+export WP_AUTH_USER="your_wp_auth_user"
+export WP_AUTH_PASS="your_wp_auth_pass"
