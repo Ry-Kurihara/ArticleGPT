@@ -60,7 +60,7 @@ def _integrate_search_articles(articles: List[SearchArticle]) -> IntegratedSearc
 
 
 def _organize_integrated_contents(integrated_search_article: IntegratedSearchArticle) -> SummarizedSearchArticle:
-    llm = ChatOpenAI(model_name="gpt-4", temperature=0.7, request_timeout=180)
+    llm = ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0.7, request_timeout=180)
     prompt_class = MakeConversationPrompt()
     prompt = prompt_class.pmt_tmpl()
     chain_input = prompt_class.variables(integrated_search_article.search_word, integrated_search_article.contents, "ordinary", 15) # HACK: commentの数はmainモジュールのargsparseクラスから取ってくる
@@ -71,7 +71,7 @@ def _organize_integrated_contents(integrated_search_article: IntegratedSearchArt
 
 
 def _make_title_from_contents(contents: str) -> str:
-    llm = ChatOpenAI(model_name="gpt-4", temperature=0.7, request_timeout=180)
+    llm = ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0.7, request_timeout=180)
     prompt_class = MakeTitlePrompt()
     prompt = prompt_class.pmt_tmpl()
     chain_input = prompt_class.variables(article_contents=contents)

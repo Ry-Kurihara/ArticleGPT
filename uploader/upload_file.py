@@ -14,7 +14,7 @@ class WpInfos():
         self.AUTH_PASS = os.environ["WP_AUTH_PASS"]
 
 
-def print_some_articles(print_num: int = 5):
+def print_current_articles(print_num: int = 3):
     wp_infos = WpInfos()
     response = requests.get(wp_infos.API_URL).json()
     for i, data in enumerate(response[:print_num]):
@@ -33,7 +33,7 @@ def upload_draft_to_wp(html_file_name: str):
         'status': 'draft'
     }
     headers = {'content-type': "Application/json"}
-    print(f"title: {title}")
+    print(f"start uploading.. title: {title}")
     response = requests.post(wp_infos.API_URL, headers=headers, json=post_data, auth=(wp_infos.AUTH_USER, wp_infos.AUTH_PASS))
 
     if response.status_code == 201:
@@ -46,5 +46,5 @@ def upload_draft_to_wp(html_file_name: str):
 
 if __name__ == "__main__":
     # for debug
-    print_some_articles()
-    upload_draft_to_wp("render/output/2ch/Summary_of_momentum4 接続安定性 不満点.html")
+    print_current_articles()
+    upload_draft_to_wp("render/output/2ch/Technics EAH-AZ80ワイヤレスイヤホンのユーザー評価まとめ.html")

@@ -4,7 +4,7 @@ from argparse import ArgumentParser, Namespace
 from crowler.get_article_info import get_article_info
 from interpreter.summarize import summarize_search_articles
 from render.render_templates import render_summarized_search_article
-from upload.uploader import upload_draft_to_wp
+from uploader.upload_file import upload_draft_to_wp
 
 
 def get_args() -> Namespace:

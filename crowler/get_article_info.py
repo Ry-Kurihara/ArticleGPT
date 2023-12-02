@@ -24,23 +24,29 @@ class SearchArticle:
 
 async def _get_target_search_link_list(search_word: str, max_rank: int) -> List[str]:
     """
-    max_rank: Google検索結果の上位何件を取得するか。10以下を指定すること。10位以降は2ページ目以降の検索結果になるが、そのページ処理は未実装。
-    Googleの検索結果の構造に依存すると、GoogleのHTML構造（セレクタ）が変わった時にエラーになる。そのため、そういった依存をなくすために、Google Custom Search APIを使う。
-    TODO: まだ検索結果が手動でやってる場合と比べて違和感がある。CSEコンソールで色々改善を試してみる。
+    この関数内でGoogle Custom Search APIへのリクエストを行う
     参考: https://qiita.com/kingpanda/items/54043eddcf09699ceabc
     """
     api_key = os.environ["CSE_API_KEY"]
     cse_id = os.environ["CSE_ID"]
     query = search_word
-    
-    urls = []
+
+    # 地域固有の検索結果を得るためのパラメータと検索言語、UI言語の指定
+    params = {
+        "key": api_key,
+        "cx": cse_id,
+        "q": query,
+        "cr": "countryJP",  # 日本に特化した検索結果
+        "lr": "lang_ja",    # 日本語の検索結果
+        "hl": "ja"          # ユーザーインターフェースの言語を日本語に
+    }
+
     print(f"start searching for: {search_word}")
-    response = requests.get(
-        f"https://www.googleapis.com/customsearch/v1?key={api_key}&cx={cse_id}&q={query}"
-    )
+    response = requests.get("https://www.googleapis.com/customsearch/v1", params=params)
     results = response.json()
-    for item in results.get("items", [])[:max_rank]:
-        urls.append(item["link"])
+    # max_rank: Google検索結果の上位何件を取得するか。10以下を指定すること。10位以降は2ページ目以降の検索結果になるが、そのページ処理は未実装。
+    urls = [item["link"] for item in results.get("items", [])[:max_rank]]
+    print(f"searched urls: {urls}")
     return urls
 
 
@@ -78,7 +84,6 @@ async def get_article_info(search_word: str, max_rank: int = 3, max_words: int =
     モデルによって最大入力トークン（≒文字数）が変わる。gpt-4モデルで上限8192トークン。
     """
     urls = await _get_target_search_link_list(search_word, max_rank)
-    print(f"target_urls: {urls}")
 
     async with async_playwright() as playwright:
         browser: Browser = await playwright.chromium.launch(headless=True)
@@ -94,4 +99,4 @@ async def get_article_info(search_word: str, max_rank: int = 3, max_words: int =
 
 if __name__ == '__main__':
     # for debug
-    asyncio.run(_get_target_search_link_list("今日の天気 静岡", 3))
+    asyncio.run(_get_target_search_link_list("ワイヤレスイヤホン AZ80 比較", 3))
