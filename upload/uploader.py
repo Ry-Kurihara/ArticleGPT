@@ -1,5 +1,5 @@
 import requests
-import os
+import os, json
 
 """
 Objects:
@@ -10,8 +10,8 @@ class WpInfos():
     def __init__(self) -> None:
         self.SITE_URL = "https://earsoku.com"
         self.API_URL = f"{self.SITE_URL}/wp-json/wp/v2/posts"
-        self.AUTH_USER = os.getenv("WP_AUTH_USER")
-        self.AUTH_PASS = os.getenv("WP_AUTH_PASS")
+        self.AUTH_USER = os.environ["WP_AUTH_USER"]
+        self.AUTH_PASS = os.environ["WP_AUTH_PASS"]
 
 
 def print_some_articles(print_num: int = 5):
@@ -32,16 +32,19 @@ def upload_draft_to_wp(html_file_name: str):
         'content': html_content,
         'status': 'draft'
     }
+    headers = {'content-type': "Application/json"}
     print(f"title: {title}")
-    response = requests.post(wp_infos.API_URL, auth=(wp_infos.AUTH_USER, wp_infos.AUTH_PASS), json=post_data)
+    response = requests.post(wp_infos.API_URL, headers=headers, json=post_data, auth=(wp_infos.AUTH_USER, wp_infos.AUTH_PASS))
 
     if response.status_code == 201:
         print('記事をアップロードしました！')
     else:
         print('記事のアップロードに失敗しました。')
-        print(f"エラー内容: {response.text}")
+        error_message = json.loads(response.text)
+        print(f"エラー全文: {error_message}")
 
 
 if __name__ == "__main__":
+    # for debug
     print_some_articles()
     upload_draft_to_wp("render/output/2ch/Summary_of_momentum4 接続安定性 不満点.html")
