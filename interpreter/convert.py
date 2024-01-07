@@ -59,11 +59,11 @@ def _integrate_search_articles(articles: List[SearchArticle]) -> IntegratedSearc
     return summarized_article
 
 
-def _convert_integrated_search_article_into_blog_posting(integrated_search_article: IntegratedSearchArticle) -> BlogPosting:
+def _convert_integrated_search_article_into_blog_posting(integrated_search_article: IntegratedSearchArticle, comment_num: int) -> BlogPosting:
     llm = ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0.7, request_timeout=180)
     prompt_class = MakeConversationPrompt()
     prompt = prompt_class.pmt_tmpl()
-    chain_input = prompt_class.variables(integrated_search_article.search_word, integrated_search_article.contents, "ordinary", 15) # HACK: commentの数はmainモジュールのargsparseクラスから取ってくる
+    chain_input = prompt_class.variables(integrated_search_article.search_word, integrated_search_article.contents, "ordinary", comment_num)
     chain = LLMChain(llm=llm, prompt=prompt, verbose=True)
     llm_resp = chain.run(chain_input)
     llm_title = _make_title_from_contents(llm_resp)
@@ -80,12 +80,12 @@ def _make_title_from_contents(contents: str) -> str:
     return llm_resp
 
 
-async def convert_search_articles_into_blog_posting(articles: List[SearchArticle], summary_word_count: int = 1000, need_summary: bool = True) -> BlogPosting:
+async def convert_search_articles_into_blog_posting(articles: List[SearchArticle], summary_word_count: int = 1000, comment_num: int = 25, need_summary: bool = True) -> BlogPosting:
     """
     summary_word_count: 記事要約の文字数。この文字数*要約記事数（だいたい3くらい）がLLMに入力される。
     """
     each_articles = _summarize_each_html_contents(articles, summary_word_count) if need_summary else articles
     _print_articles(each_articles)
     integrated = _integrate_search_articles(each_articles)
-    blog_posting = _convert_integrated_search_article_into_blog_posting(integrated)
+    blog_posting = _convert_integrated_search_article_into_blog_posting(integrated, comment_num)
     return blog_posting

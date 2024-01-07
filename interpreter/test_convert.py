@@ -11,10 +11,10 @@ def integrated_article():
 @patch("interpreter.convert.ChatOpenAI")
 @patch("interpreter.convert.LLMChain")
 @patch("interpreter.convert._make_title_from_contents")
-def test_organize_html_contents(mocked_make_title, mocked_llm_chain, mocked_chat_openai, integrated_article):
+def test_convert_integrated_search_article(mocked_make_title, mocked_llm_chain, mocked_chat_openai, integrated_article):
     mocked_chat_openai.return_value = None
     mocked_make_title.return_value = "test_dayo"
-    _convert_integrated_search_article_into_blog_posting(integrated_article)
+    _convert_integrated_search_article_into_blog_posting(integrated_article, comment_num=10)
 
     # ChatOpenAI, LLMChainのコンストラクタが期待通りに呼ばれたかどうかを確認
     mocked_chat_openai.assert_called_once()
