@@ -19,7 +19,7 @@ SearchArticle | List[SearchArticle] → SummarizedSearchArticle
 """
 
 @dataclass
-class SummarizedSearchArticle:
+class BlogPosting:
     search_word: str
     title: str
     contents: str
@@ -59,7 +59,7 @@ def _integrate_search_articles(articles: List[SearchArticle]) -> IntegratedSearc
     return summarized_article
 
 
-def _organize_integrated_contents(integrated_search_article: IntegratedSearchArticle) -> SummarizedSearchArticle:
+def _convert_integrated_search_article_into_blog_posting(integrated_search_article: IntegratedSearchArticle) -> BlogPosting:
     llm = ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0.7, request_timeout=180)
     prompt_class = MakeConversationPrompt()
     prompt = prompt_class.pmt_tmpl()
@@ -67,7 +67,7 @@ def _organize_integrated_contents(integrated_search_article: IntegratedSearchArt
     chain = LLMChain(llm=llm, prompt=prompt, verbose=True)
     llm_resp = chain.run(chain_input)
     llm_title = _make_title_from_contents(llm_resp)
-    return SummarizedSearchArticle(integrated_search_article.search_word, llm_title, llm_resp)
+    return BlogPosting(integrated_search_article.search_word, llm_title, llm_resp)
 
 
 def _make_title_from_contents(contents: str) -> str:
@@ -80,12 +80,12 @@ def _make_title_from_contents(contents: str) -> str:
     return llm_resp
 
 
-async def summarize_search_articles(articles: List[SearchArticle], summary_word_count: int = 1000) -> SummarizedSearchArticle:
+async def convert_search_articles_into_blog_posting(articles: List[SearchArticle], summary_word_count: int = 1000, need_summary: bool = True) -> BlogPosting:
     """
     summary_word_count: 記事要約の文字数。この文字数*要約記事数（だいたい3くらい）がLLMに入力される。
     """
-    summarized_each_articles = await _summarize_each_html_contents(articles, summary_word_count)
-    _print_articles(summarized_each_articles)
-    integrated = _integrate_search_articles(summarized_each_articles)
-    organized = _organize_integrated_contents(integrated)
-    return organized
+    each_articles = _summarize_each_html_contents(articles, summary_word_count) if need_summary else articles
+    _print_articles(each_articles)
+    integrated = _integrate_search_articles(each_articles)
+    blog_posting = _convert_integrated_search_article_into_blog_posting(integrated)
+    return blog_posting

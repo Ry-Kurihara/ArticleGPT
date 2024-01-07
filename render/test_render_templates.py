@@ -1,12 +1,12 @@
 import os
 import pytest
 from render.render_templates import SecondChFormatter, QiitaFormatter
-from interpreter.summarize import SummarizedSearchArticle
+from interpreter.convert import BlogPosting
 
 
 @pytest.fixture
 def summarized_article():
-    article = SummarizedSearchArticle(
+    article = BlogPosting(
         search_word="test_dayo",
         title="test_title",
         contents="{%- set sample = 'aiueo' %} This is {{ sample }}"

@@ -13,7 +13,7 @@ class MakeConversationPrompt:
         sys_pmt = SystemMessagePromptTemplate(prompt = load_prompt("interpreter/my_prompts/conversation.json"))
         human_template = """
             検索ワード: {search_word}
-            要約:
+            ヒットした記事の内容:
             {integrated_summary}
         """
         human_pmt = HumanMessagePromptTemplate.from_template(human_template)

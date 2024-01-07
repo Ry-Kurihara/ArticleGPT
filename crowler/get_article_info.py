@@ -81,7 +81,19 @@ async def get_article_info(search_word: str, max_rank: int = 3, max_words: int =
     """
     max_words: 
     使用モデルの最大入力トークンを超過しないように指定する。
-    モデルによって最大入力トークン（≒文字数）が変わる。gpt-4モデルで上限8192トークン。
+
+    最大入力トークン（≒文字数）：
+        - gpt-4モデルで上限8192トークン。
+        - gpt-4-turboで128,000トークン。gpt-4の16倍。
+
+    料金（2024/01/07時点）：
+        - GPT4-Turbo: Input:$0.01/1Ktokens Output:$0.03/1Ktokens
+            - 1$=150円換算で、Input:1.5円/1Ktokens Output:4.5円/1Ktokens
+
+    1実行あたりの試算（2024/01/07時点のGPT4-Turbo）：
+        - 1記事あたりのトークン数を2000トークンとして、3記事分（max_rank=3）とすると、Inputが6000トークン。Outputは要約されて帰ってくるとして、3000トークンとする。
+            - 実行コストは、Input:1.5*6=9円, Output:4.5*3=13.5円。合計22.5円。
+            - 要約テキスト->記事テキスト出力コストはこれよりも少し安いと考えればOK。
     """
     urls = await _get_target_search_link_list(search_word, max_rank)
 

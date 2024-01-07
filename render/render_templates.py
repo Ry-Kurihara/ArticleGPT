@@ -1,9 +1,9 @@
 from jinja2 import Environment, FileSystemLoader
-from interpreter.summarize import SummarizedSearchArticle
+from interpreter.convert import BlogPosting
 
 """
 Objects:
-SummarizedSearchArticle → <File Output>
+BlogPosting → <File Output>
 """
 
 class BaseFormatter():
@@ -11,7 +11,7 @@ class BaseFormatter():
         self.env = Environment(loader=FileSystemLoader('.'))
         self.output_dir = f"render/output/{output_dir}"
 
-    def write_tpl_from_object(self, article: SummarizedSearchArticle, file_name: str):
+    def write_tpl_from_object(self, article: BlogPosting, file_name: str):
         with open(f"{self.output_dir}/{file_name}.html.tpl", "w", encoding="utf-8") as f:
             f.write(article.contents)
 
@@ -22,7 +22,7 @@ class BaseFormatter():
             f.write(output)
 
 class SecondChFormatter(BaseFormatter):    
-    def write_tpl_from_object(self, article: SummarizedSearchArticle, file_name: str):
+    def write_tpl_from_object(self, article: BlogPosting, file_name: str):
         with open(f"{self.output_dir}/{file_name}.html.tpl", "w", encoding="utf-8") as f:
             f.write("{%- extends 'render/templates/2ch_base.html.tpl' -%}\n\n")
             f.write(article.contents)
@@ -33,7 +33,7 @@ class QiitaFormatter(BaseFormatter):
         super().__init__(output_dir)
         self.env.filters["color_to_emoji"] = self.convert_color_to_emoji
 
-    def write_tpl_from_object(self, article: SummarizedSearchArticle, file_name: str):
+    def write_tpl_from_object(self, article: BlogPosting, file_name: str):
         with open(f"{self.output_dir}/{file_name}.html.tpl", "w", encoding="utf-8") as f:
             f.write("{%- extends 'render/templates/qiita_base.html.tpl' -%}\n\n")
             f.write(article.contents)
@@ -58,7 +58,7 @@ class QiitaFormatter(BaseFormatter):
             return ":smiley:"
 
 
-def render_summarized_search_article(article: SummarizedSearchArticle):
+def render_summarized_search_article(article: BlogPosting):
     render = SecondChFormatter("2ch") # CHANGE: 生成したい記事タイプによってここを変更する運用にしている
     file_name = article.title
     render.write_tpl_from_object(article, file_name)

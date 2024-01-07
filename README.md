@@ -11,10 +11,12 @@ https://qiita.com/Ryku/items/939287c5f500c60dbac9
 
 # How to use?
 ```sh 
-python main.py 今日の天気
+ex.1 python main.py 今日の天気
+ex.2 python main.py 今日の天気 東京
+ex.3 python main.py 今日の天気 東京 --max_page_chars 5000 # max_page_charsのデフォルト値は2000です
 ```
 
-`render/output/qiita/Summary_of_今日の天気.html`に記事が生成されます。
+`render/output/qiita/今日の東京の天気（記事名はGPTが考えたものになります）.html`に記事が生成されます。
 
 ## WP投稿を実行する場合
 以下コマンドを実行して必要な環境変数を設定してください。
