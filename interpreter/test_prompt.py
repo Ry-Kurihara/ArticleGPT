@@ -10,7 +10,9 @@ def test_prompt():
 def test_prompt_enable_llm_to_convert_format_to_2ch():
     prompt_class = MakeConversationPrompt()
     actual_chat_pmt = prompt_class.pmt_tmpl()
-    assert set(actual_chat_pmt.input_variables) == set(['search_word', 'integrated_summary', 'personality', 'comments_count'])
+    actual_input_variables = set(actual_chat_pmt.input_variables)
+    expected_input_variables = set(['search_word', 'integrated_summary', 'personality', 'comments_count', 'custom_instructions'])
+    assert actual_input_variables == expected_input_variables
 
 def test_chain_input_if_arg_num_is_correct():
     # chain_input_dictの引数が、(sys_pmtのvariables + human_pmtのvariables)と一致するか

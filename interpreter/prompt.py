@@ -21,11 +21,14 @@ class MakeConversationPrompt:
         return chat_pmt
     
     def variables(self, search_word: str, integrated_summary: str, personality: str = "nan_j", comments_count: int = 10) -> dict[str]:
+        with open("interpreter/my_prompts/custom_instructions.txt", "r") as f:
+            custom_instructions = f.read()
         return {
             "search_word": search_word,
             "integrated_summary": integrated_summary,
             "personality": get_personality_details(personality),
             "comments_count": comments_count,
+            "custom_instructions": custom_instructions,
         }
 
 class MakeTitlePrompt:

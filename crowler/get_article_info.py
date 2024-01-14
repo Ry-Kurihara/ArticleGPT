@@ -77,7 +77,7 @@ async def _get_page_title_and_content(browser: Browser, page_links: Iterable, se
     articles = await asyncio.gather(*tasks)
     return articles
 
-async def get_article_info(search_word: str, max_rank: int = 3, max_words: int = 2000) -> List[SearchArticle]:
+async def get_article_info(search_word: str, max_rank: int = 3, max_words: int = 200) -> List[SearchArticle]:
     """
     max_words: 
     使用モデルの最大入力トークンを超過しないように指定する。

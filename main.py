@@ -10,9 +10,9 @@ from uploader.upload_file import upload_draft_to_wp
 def get_args() -> Namespace:
     parser = ArgumentParser(description="Search for a specific word and crawl the high rank articles")
     parser.add_argument("search_word", nargs='+', help="The word to search for")
-    parser.add_argument("--max_page_chars", type=int, help="Maximum number of characters per getted page. default=2000") # 指定しなかった場合は、関数のデフォルト値が使われる
-    parser.add_argument("--comment_num", type=int, help="Number of comments to generate. default=25")
-    parser.add_argument("--need_summary", type=str, default="yes", help="Whether to summarize the articles.") # 要約したくない場合はnoを指定
+    parser.add_argument("--max_page_chars", type=int, default=200, help="Maximum number of characters per getted page.")
+    parser.add_argument("--comment_num", type=int, default=25, help="Number of comments to generate.")
+    parser.add_argument("--need_summary", type=str, default="yes", help="Whether to summarize the articles.")
     args = parser.parse_args()
     args.search_word = ' '.join(args.search_word)  # Converts list of words into a single string
     return args
