@@ -12,7 +12,7 @@ def get_args() -> Namespace:
     parser.add_argument("search_word", nargs='+', help="The word to search for")
     parser.add_argument("--max_page_chars", type=int, default=200, help="Maximum number of characters per getted page.")
     parser.add_argument("--comment_num", type=int, default=25, help="Number of comments to generate.")
-    parser.add_argument("--need_summary", type=str, default="yes", help="Whether to summarize the articles.")
+    parser.add_argument("--need_summary", type=str, default="no", help="Whether to summarize the articles.")
     args = parser.parse_args()
     args.search_word = ' '.join(args.search_word)  # Converts list of words into a single string
     return args
