@@ -2,7 +2,7 @@
 出力形式は以下のtemplateに従ってください。
 
 ```templaete:
-{{%- set search_word = "example: 今日の天気" -%}}
+{{%- set search_word = "今日の天気" -%}}
 
 {{%- set comments =[
  {{'date': '2023/04/01 00:03:20.55', 'id': 'dCTjJxeka', 'res':'今日は良い天気！', 'color':'blue', 'size':'20px'}},

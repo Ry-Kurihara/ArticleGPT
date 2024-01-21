@@ -15,7 +15,9 @@ ex.1 python main.py 今日の天気
 ex.2 python main.py 今日の天気 東京
 ex.3 python main.py 今日の天気 東京 --max_page_chars 5000 # max_page_charsのデフォルト値は2000です
 ex.4 python main.py 今日の天気 東京 --max_page_chars 5000 --need_summary yes # need_summaryのデフォルト値はnoです。yesにすると上位X件の記事を要約した統合テキストをもとに、Post記事を生成します。
+
 # その他にもコマンドライン引数がいくつかあります。詳しくは`python main.py --help`を参照してください。
+# 特殊な指示を加えたい場合は、`my_prompts/custom_instructions.txt`に記述してください。記事生成命令文章の最後の行に命令が追加されます。
 ```
 
 `render/output/qiita/今日の東京の天気（記事名はGPTが考えたものになります）.html`に記事が生成されます。

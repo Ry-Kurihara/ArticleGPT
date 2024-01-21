@@ -96,8 +96,8 @@ async def get_article_info(search_word: str, max_rank: int = 3, max_words: int =
             - 実行コストは、Input:1.5*6=9円, Output:4.5*3=13.5円。合計22.5円。
             - 要約テキスト->記事テキスト出力コストはこれよりも少し安いと考えればOK。
     """
-    # urls = await _get_target_search_link_list(search_word, max_rank)
-    urls = ['https://twitter.com/search?q=%E7%A6%8F%E8%80%B3%E8%A2%8B&src=typed_query']
+    urls = await _get_target_search_link_list(search_word, max_rank) # TODO: max_rankもコマンドライン引数で指定できるようにする。
+    # urls = ['any_url'] # for debug
 
     async with async_playwright() as playwright:
         browser: Browser = await playwright.chromium.launch(headless=True) # Webサイトによってはheadlessモードだとアクセス拒否が発生することがある。その場合はheadless=Falseにする。
