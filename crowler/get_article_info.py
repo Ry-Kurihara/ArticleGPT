@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 # Type definition
 from typing import List
-from playwright.sync_api import Browser, BrowserContext, Page, Locator
+from playwright.sync_api import Browser, BrowserContext, Page
 from typing import Iterable
 
 """
@@ -53,9 +53,12 @@ async def _get_target_search_link_list(search_word: str, max_rank: int) -> List[
 async def _fetch_page_content(page: Page, url: str, search_word: str, max_words: int) -> SearchArticle:
     await page.goto(url)
     # await page.pause()
-    title: str = await page.title()
+    # user_agent = await page.evaluate("navigator.userAgent") # クロールするブラウザのVersionを確認するために使用
+    # print(f"User Agent: {user_agent}")
 
+    title: str = await page.title()
     content: str = await page.content()
+
     soup = BeautifulSoup(content, 'html.parser')
     for script in soup(['script', 'style']):
         script.extract()
@@ -67,17 +70,15 @@ async def _fetch_page_content(page: Page, url: str, search_word: str, max_words:
     return article
 
 
-async def _get_page_title_and_content(browser: Browser, page_links: Iterable, search_word: str, max_words: int) -> List[SearchArticle]:
+async def _get_page_title_and_content(context: BrowserContext, page_links: Iterable, search_word: str, max_words: int) -> List[SearchArticle]:
     tasks = []
-    context = await browser.new_context()
-    context.set_default_timeout(120000) # 120,000ms: 120s
     for url in page_links:
         page = await context.new_page()
         tasks.append(_fetch_page_content(page, url, search_word, max_words))
     articles = await asyncio.gather(*tasks)
     return articles
 
-async def get_article_info(search_word: str, max_rank: int = 3, max_words: int = 200) -> List[SearchArticle]:
+async def get_article_info(search_word: str, max_rank: int = 3, max_words: int = 2000) -> List[SearchArticle]:
     """
     max_words: 
     使用モデルの最大入力トークンを超過しないように指定する。
@@ -95,14 +96,16 @@ async def get_article_info(search_word: str, max_rank: int = 3, max_words: int =
             - 実行コストは、Input:1.5*6=9円, Output:4.5*3=13.5円。合計22.5円。
             - 要約テキスト->記事テキスト出力コストはこれよりも少し安いと考えればOK。
     """
-    urls = await _get_target_search_link_list(search_word, max_rank)
+    # urls = await _get_target_search_link_list(search_word, max_rank)
+    urls = ['https://twitter.com/search?q=%E7%A6%8F%E8%80%B3%E8%A2%8B&src=typed_query']
 
     async with async_playwright() as playwright:
-        browser: Browser = await playwright.chromium.launch(headless=True)
-        context: BrowserContext = await browser.new_context()
+        browser: Browser = await playwright.chromium.launch(headless=True) # Webサイトによってはheadlessモードだとアクセス拒否が発生することがある。その場合はheadless=Falseにする。
+        device = playwright.devices["Desktop Chrome"] # 特定のデバイス環境を模倣できる。この引数を与えなくてもデフォルト設定でcontextを作成してくれるため特に問題は生じないが、一応設定しておく。
+        context: BrowserContext = await browser.new_context(**device)
         context.set_default_timeout(60000) # 60,000ms: 60s
 
-        articles = await _get_page_title_and_content(browser, urls, search_word, max_words)
+        articles = await _get_page_title_and_content(context, urls, search_word, max_words)
         for article in articles:
             print(f"Title: {article.title}\nContent: {article.html_content[:300]}\n\n")
 
@@ -111,4 +114,5 @@ async def get_article_info(search_word: str, max_rank: int = 3, max_words: int =
 
 if __name__ == '__main__':
     # for debug
-    asyncio.run(_get_target_search_link_list("ワイヤレスイヤホン AZ80 比較", 3))
+    # asyncio.run(_get_target_search_link_list("ワイヤレスイヤホン AZ80 比較", 3))
+    asyncio.run(get_article_info("Twitter", 2))
