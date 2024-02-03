@@ -22,7 +22,7 @@ SearchArticle | List[SearchArticle] → SummarizedSearchArticle
 class BlogPosting:
     search_word: str
     title: str
-    contents: str
+    contents: str # tpl形式の文字列。これをjinja2でレンダリングしてhtmlにする。
 
 @dataclass
 class IntegratedSearchArticle:

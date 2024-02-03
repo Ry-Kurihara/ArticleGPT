@@ -4,7 +4,7 @@
 </div>
 
 {% for comment in comments %}
-<div class="t_h" ><div class="mtmks">{{loop.index + 100}}: <span style="color: green; font-weight: bold;">イヤホン速報</span> <span style="color: gray;"> {{ comment.date }} ID:{{ comment.id }}</span></div></div>
+<div class="t_h" ><div class="mtmks">{{ comment.res_index }}: <span style="color: green; font-weight: bold;">イヤホン速報</span> <span style="color: gray;"> {{ comment.date }} ID:{{ comment.id }}</span></div></div>
 <div class="t_b" style="font-weight:bold;margin-bottom:90px;margin-top:16px;color:{{comment.color|default('black')}};font-size:{{comment.size|default('18px')}};">{{comment.res}}</div><br/>
 {%- endfor %}
 
