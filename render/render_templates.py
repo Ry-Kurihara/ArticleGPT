@@ -10,6 +10,11 @@ class BaseFormatter():
     def __init__(self, output_dir: str) -> None:
         self.env = Environment(loader=FileSystemLoader('.'))
         self.output_dir = f"render/output/{output_dir}"
+        self.env.globals['process_item'] = self.process_item
+
+    def process_item(self, item: str) -> str:
+        asin = 'amazon_asin_'
+        return asin + item
 
     def write_tpl_from_object(self, article: BlogPosting, file_name: str):
         with open(f"{self.output_dir}/{file_name}.html.tpl", "w", encoding="utf-8") as f:

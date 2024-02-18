@@ -60,10 +60,10 @@ def test_qiita_formatter(summarized_article):
     os.remove(tpl_file_path)
 
 
-def test_qiita_with_specified_path():
+def test_with_specified_path():
     html_file_path = f"render/output/tests/for_test.html"
-    os.remove(html_file_path)
-
-    renderer = QiitaFormatter(output_dir="tests")
+    if os.path.exists(html_file_path):
+        os.remove(html_file_path)
+    renderer = SecondChFormatter(output_dir="tests") # 任意のフォーマッタに変更してOK
     renderer.render("for_test")
     assert os.path.exists(html_file_path)
