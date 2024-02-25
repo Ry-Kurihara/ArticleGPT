@@ -68,3 +68,10 @@ def render_summarized_search_article(article: BlogPosting):
     file_name = article.title
     render.write_tpl_from_object(article, file_name)
     render.render(file_name)
+
+if __name__ == "__main__":
+    # デバッグ用：python -m render.render_templates
+    # プロダクトでは関数呼び出しから使うため、ここは実行されない
+    render = SecondChFormatter("2ch")
+    tpl_file_name = "debug_items"
+    render.render(tpl_file_name)

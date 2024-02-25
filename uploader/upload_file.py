@@ -14,7 +14,7 @@ class WpInfos():
         self.AUTH_PASS = os.environ["WP_AUTH_PASS"]
 
 
-def print_current_articles(print_num: int = 3):
+def _print_wp_current_articles(print_num: int = 3):
     wp_infos = WpInfos()
     response = requests.get(wp_infos.API_URL).json()
     for i, data in enumerate(response[:print_num]):
@@ -45,6 +45,6 @@ def upload_draft_to_wp(html_file_name: str):
 
 
 if __name__ == "__main__":
-    # for debug
-    print_current_articles()
-    upload_draft_to_wp("render/output/2ch/Technics EAH-AZ80ワイヤレスイヤホンのユーザー評価まとめ.html")
+    # デバッグ用：python -m uploader.upload_file
+    _print_wp_current_articles()
+    upload_draft_to_wp("render/output/2ch/ワイヤレスイヤホン選びのポイント：ユーザー意見まとめ.html") # 生成されたファイルの`相対パスをコピー`で取得できる
