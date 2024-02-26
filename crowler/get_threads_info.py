@@ -29,7 +29,7 @@ async def _fetch_page_content(page: Page, url: str, max_words: int) -> ThreadCon
 
     thread = ThreadContents(thread_title=title, html_content=content[:max_words])
     await page.close()
-    print(f"thread詳細: {thread.thread_title},\n {thread.html_content[:1000]}")
+    print(f"thread詳細: {thread.thread_title},\n {thread.html_content[:30000]}")
     print(f"threadの文字数: {len(thread.html_content)}")
     return thread
 
@@ -49,5 +49,6 @@ async def get_threads(urls: List[str], max_words: int) -> List[ThreadContents]:
     return threads
 
 if __name__ == '__main__':
+    # デバッグ用： python -m crowler.get_threads
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(get_threads(['https://kizuna.5ch.net/test/read.cgi/wm/1690439870/l50'], None))
+    loop.run_until_complete(get_threads(['https://kizuna.5ch.net/test/read.cgi/wm/1690439870/'], None))
