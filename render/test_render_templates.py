@@ -1,5 +1,6 @@
-import pytest
 import os, textwrap
+import pytest
+from unittest.mock import patch, call
 from render.render_templates import SecondChFormatter, QiitaFormatter
 from interpreter.convert import BlogPosting
 
@@ -22,7 +23,7 @@ def summarized_article():
     return article
 
 
-def test_2ch_formatter(summarized_article):
+def test_2ch_formatter_with_dummy_object(summarized_article):
     output_dir = "2ch"
     renderer = SecondChFormatter(output_dir)
     file_name = summarized_article.title
@@ -41,7 +42,7 @@ def test_2ch_formatter(summarized_article):
     os.remove(tpl_file_path)
 
 
-def test_qiita_formatter(summarized_article):
+def test_qiita_formatter_with_dummy_object(summarized_article):
     output_dir = "qiita"
     renderer = QiitaFormatter(output_dir)
     file_name = summarized_article.title
@@ -59,11 +60,17 @@ def test_qiita_formatter(summarized_article):
     os.remove(html_file_path)
     os.remove(tpl_file_path)
 
-
-def test_with_specified_path():
-    html_file_path = f"render/output/tests/for_test.html"
-    if os.path.exists(html_file_path):
-        os.remove(html_file_path)
+    
+@patch("render.render_templates.process_item")
+def test_item_param_with_test_file(mock_process_item):
+    add_test_str = lambda x: x + "test"
+    mock_process_item.side_effect = add_test_str
     renderer = SecondChFormatter(output_dir="tests") # 任意のフォーマッタに変更してOK
-    renderer.render("for_test")
+    renderer.render("test_item_humidifier")
+
+    html_file_path = f"render/output/tests/test_item_humidifier.html"
     assert os.path.exists(html_file_path)
+    assert call("hybrid humidifier") in mock_process_item.call_args_list
+    assert call("ダイニチ加湿器") in mock_process_item.call_args_list
+
+    os.remove(html_file_path)
