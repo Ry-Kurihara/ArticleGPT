@@ -15,7 +15,7 @@ from crowler.get_article_info import SearchArticle
 
 """
 Objects:
-SearchArticle | List[SearchArticle] → SummarizedSearchArticle
+SearchArticle | List[SearchArticle] → BlogPosting
 """
 
 @dataclass
