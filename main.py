@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     # interpreter
     need_summary = False if args.need_summary == "no" else True
-    blog_posting = asyncio.run(convert_search_articles_into_blog_posting(search_articles, comment_num=args.comment_num, need_summary=need_summary))
+    blog_posting = convert_search_articles_into_blog_posting(search_articles, comment_num=args.comment_num, need_summary=need_summary)
 
     # render
     render_summarized_search_article(blog_posting)
