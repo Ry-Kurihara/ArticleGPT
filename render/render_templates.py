@@ -73,5 +73,5 @@ if __name__ == "__main__":
     # デバッグ用：python -m render.render_templates
     # プロダクトでは関数呼び出しから使うため、ここは実行されない
     render = SecondChFormatter("2ch")
-    tpl_file_name = "debug_items"
+    tpl_file_name = "Sennheiser True Wireless 4の音質と価値を徹底評価：ユーザーの声から"
     render.render(tpl_file_name)

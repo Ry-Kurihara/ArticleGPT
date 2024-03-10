@@ -10,6 +10,7 @@ from uploader.upload_file import upload_draft_to_wp
 def get_args() -> Namespace:
     parser = ArgumentParser(description="Search for a specific word and crawl the high rank articles")
     parser.add_argument("search_word", nargs='+', help="The word to search for")
+    parser.add_argument("--max_rank", type=int, default=3, help="The number of articles to get from the top of Google search")
     parser.add_argument("--max_page_chars", type=int, default=2000, help="Maximum number of characters per getted page.")
     parser.add_argument("--comment_num", type=int, default=25, help="Number of comments to generate.")
     parser.add_argument("--need_summary", type=str, default="no", help="Whether to summarize the articles.")
@@ -21,7 +22,7 @@ def get_args() -> Namespace:
 if __name__ == '__main__':
     args = get_args()
     # crowler
-    search_articles = asyncio.run(get_article_info(args.search_word, max_words=args.max_page_chars))
+    search_articles = asyncio.run(get_article_info(args.search_word, max_rank=args.max_rank, max_words=args.max_page_chars))
 
     # interpreter
     need_summary = False if args.need_summary == "no" else True

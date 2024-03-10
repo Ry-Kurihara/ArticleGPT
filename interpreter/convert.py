@@ -32,8 +32,7 @@ def _print_articles(articles: List[SearchArticle]) -> None:
         print(f"Search_Word: {article.search_word} \nTitle: {article.title} \nPrint_Contents: {article.html_content} \n")
 
 
-def _summarize_each_html_contents(articles: List[SearchArticle], summary_word_count: int) -> List[SearchArticle]:
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.5)
+def _summarize_each_html_contents(llm: ChatOpenAI, articles: List[SearchArticle], summary_word_count: int) -> List[SearchArticle]:
     prompt = summarize_pmt()
     output_parser = StrOutputParser()
     chain = prompt | llm | output_parser
@@ -57,21 +56,19 @@ def _integrate_search_articles(articles: List[SearchArticle]) -> IntegratedSearc
     return summarized_article
 
 
-def _convert_integrated_search_article_into_blog_posting(integrated_search_article: IntegratedSearchArticle, comment_num: int) -> BlogPosting:
-    llm = ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0.7, request_timeout=180)
+def _convert_integrated_search_article_into_blog_posting(llm: ChatOpenAI, integrated_search_article: IntegratedSearchArticle, comment_num: int) -> BlogPosting:
     prompt_class = MakeConversationPrompt()
     prompt = prompt_class.pmt_tmpl()
     chain_input = prompt_class.variables(integrated_search_article.search_word, integrated_search_article.contents, "ordinary", comment_num)
     
     chain = prompt | llm | StrOutputParser()
     console = {'callbacks': [ConsoleCallbackHandler()]} # HACK: set_verbose(True)が効かないためこちらで代用中
-    llm_resp = chain.invoke(chain_input, config=console)
-    llm_title = _make_title_from_contents(llm_resp) # TODO: タイトルの生成を同じllm内で行うようにする
-    return BlogPosting(integrated_search_article.search_word, llm_title, llm_resp)
+    resp_contents = chain.invoke(chain_input, config=console)
+    resp_title = _make_title_from_contents(llm, resp_contents)
+    return BlogPosting(integrated_search_article.search_word, resp_title, resp_contents)
 
 
-def _make_title_from_contents(contents: str) -> str:
-    llm = ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0.7, request_timeout=180)
+def _make_title_from_contents(llm: ChatOpenAI, contents: str) -> str:
     prompt_class = MakeTitlePrompt()
     prompt = prompt_class.pmt_tmpl()
     chain_input = prompt_class.variables(article_contents=contents)
@@ -85,10 +82,11 @@ def convert_search_articles_into_blog_posting(articles: List[SearchArticle], sum
     """
     summary_word_count: 記事要約の文字数。この文字数*要約記事数（だいたい3くらい）がLLMに入力される。
     """
-    each_articles = _summarize_each_html_contents(articles, summary_word_count) if need_summary else articles
+    llm = ChatOpenAI(model_name="gpt-4-0125-preview", temperature=0.7, request_timeout=180)
+    each_articles = _summarize_each_html_contents(llm, articles, summary_word_count) if need_summary else articles
     _print_articles(each_articles)
     integrated = _integrate_search_articles(each_articles)
-    blog_posting = _convert_integrated_search_article_into_blog_posting(integrated, comment_num)
+    blog_posting = _convert_integrated_search_article_into_blog_posting(llm, integrated, comment_num)
     return blog_posting
 
 

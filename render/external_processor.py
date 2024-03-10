@@ -8,7 +8,7 @@ def _create_amazon_instance_from_env() -> AmazonApi:
     secret_key = os.environ['PA_API_SECRET_KEY']
     partner_tag = os.environ['PA_API_PARTNER_TAG']
     country = 'JP'
-    thorottling = 1 # Rate limit：1リクエスト/秒 & 8640リクエスト/日, 参考：https://webservices.amazon.com/paapi5/documentation/troubleshooting/api-rates.html
+    thorottling = 1.5 # Rate limit：1リクエスト/秒 & 8640リクエスト/日, 参考：https://webservices.amazon.com/paapi5/documentation/troubleshooting/api-rates.html
     return AmazonApi(access_key, secret_key, partner_tag, country, thorottling=thorottling)
 
 
