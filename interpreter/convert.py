@@ -33,8 +33,7 @@ def _print_articles(articles: List[SearchArticle]) -> None:
 
 
 def _summarize_each_html_contents(articles: List[SearchArticle], summary_word_count: int) -> List[SearchArticle]:
-    console = {'callbacks': [ConsoleCallbackHandler()]} # TODO: set_verboseが効かないため、こちらで代用中。別の方法を探したい。
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.5).with_config(console)
+    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.5)
     prompt = summarize_pmt()
     output_parser = StrOutputParser()
     chain = prompt | llm | output_parser
@@ -65,7 +64,8 @@ def _convert_integrated_search_article_into_blog_posting(integrated_search_artic
     chain_input = prompt_class.variables(integrated_search_article.search_word, integrated_search_article.contents, "ordinary", comment_num)
     
     chain = prompt | llm | StrOutputParser()
-    llm_resp = chain.invoke(chain_input)
+    console = {'callbacks': [ConsoleCallbackHandler()]} # HACK: set_verbose(True)が効かないためこちらで代用中
+    llm_resp = chain.invoke(chain_input, config=console)
     llm_title = _make_title_from_contents(llm_resp) # TODO: タイトルの生成を同じllm内で行うようにする
     return BlogPosting(integrated_search_article.search_word, llm_title, llm_resp)
 
@@ -97,4 +97,4 @@ if __name__ == '__main__':
     # set_debug(True) # set_verbose(True) or set_debug(True)
     sa = SearchArticle(search_word="今日の天気", title="気象庁 天気予報", html_content="<p>今日は晴れです。</p>")
     # _summarize_each_html_contents([sa, sa], 1000)
-    convert_search_articles_into_blog_posting([sa, sa], 1000, 25, True)
+    convert_search_articles_into_blog_posting([sa, sa], 1000, 25, False)

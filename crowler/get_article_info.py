@@ -113,6 +113,6 @@ async def get_article_info(search_word: str, max_rank: int = 3, max_words: int =
     
 
 if __name__ == '__main__':
-    # for debug
+    # デバッグ用：python -m crowler.get_article_info
     # asyncio.run(_get_target_search_link_list("ワイヤレスイヤホン AZ80 比較", 3))
     asyncio.run(get_article_info("Twitter", 2))

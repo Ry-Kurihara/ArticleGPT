@@ -8,7 +8,7 @@ Objects:
 
 class WpInfos():
     def __init__(self) -> None:
-        self.SITE_URL = "https://earsoku.com"
+        self.SITE_URL = os.environ["WP_SITE_URL"]
         self.API_URL = f"{self.SITE_URL}/wp-json/wp/v2/posts"
         self.AUTH_USER = os.environ["WP_AUTH_USER"]
         self.AUTH_PASS = os.environ["WP_AUTH_PASS"]
