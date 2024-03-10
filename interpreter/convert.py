@@ -1,6 +1,6 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser
-from langchain.globals import set_verbose, set_debug
+from langchain.callbacks.tracers import ConsoleCallbackHandler
 
 # Tools
 from dataclasses import dataclass
@@ -33,7 +33,8 @@ def _print_articles(articles: List[SearchArticle]) -> None:
 
 
 def _summarize_each_html_contents(articles: List[SearchArticle], summary_word_count: int) -> List[SearchArticle]:
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.5)
+    console = {'callbacks': [ConsoleCallbackHandler()]} # TODO: set_verboseが効かないため、こちらで代用中。別の方法を探したい。
+    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.5).with_config(console)
     prompt = summarize_pmt()
     output_parser = StrOutputParser()
     chain = prompt | llm | output_parser
@@ -58,7 +59,7 @@ def _integrate_search_articles(articles: List[SearchArticle]) -> IntegratedSearc
 
 
 def _convert_integrated_search_article_into_blog_posting(integrated_search_article: IntegratedSearchArticle, comment_num: int) -> BlogPosting:
-    llm = ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0.7, request_timeout=180, verbose=True)
+    llm = ChatOpenAI(model_name="gpt-4-1106-preview", temperature=0.7, request_timeout=180)
     prompt_class = MakeConversationPrompt()
     prompt = prompt_class.pmt_tmpl()
     chain_input = prompt_class.variables(integrated_search_article.search_word, integrated_search_article.contents, "ordinary", comment_num)

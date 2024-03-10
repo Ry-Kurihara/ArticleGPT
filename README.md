@@ -22,13 +22,12 @@ ex.4 python main.py 今日の天気 東京 --max_page_chars 5000 --need_summary 
 
 `render/output/qiita/今日の東京の天気（記事名はGPTが考えたものになります）.html`に記事が生成されます。
 
-## WP投稿を実行する場合
+## How to set environment variables?
 以下コマンドを実行して必要な環境変数を設定してください。
-WP_AUTH_PASSは`ダッシュボード → ユーザー → アプリケーションパスワード`より発行できます。
+1PasswordのCLIを通して環境変数を取得する形式にしています。`get_env.sh`に記載されている1Pass格納場所に環境変数を設定してください。
 
 ```sh
-export WP_AUTH_USER=xxxxx
-export WP_AUTH_PASS=xxxxx
+source tools/get_env.sh
 ```
 
 # How to test?
@@ -51,7 +50,7 @@ python -m pytest -v render/
 ```
 
 # Features
-`crowler`、`interpreter`、`render`の主要3モジュールの構成で動いています。
+`crowler`、`interpreter`、`render`、`uploader`の主要4モジュールの構成で動いています。
 
 - crowler
   - コマンドライン引数で指定されたワードを元に、Google検索結果を取得します。
@@ -66,6 +65,8 @@ python -m pytest -v render/
     - Total: 10000char（GPT4: $0.3, GPT3.5-16K: $0.03）
 - render
   - `interpreter`モジュールから渡された文章を元に、Jinja2を使用して各種サイトに投稿できる状態のHTML文章を生成します。
+- uploader
+  - 生成されたHTMLファイルをWordPressに投稿します。
 
 # Ingenuity
 - BeautifulSoup
