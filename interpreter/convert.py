@@ -1,8 +1,10 @@
 from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 from langchain_core.output_parsers import StrOutputParser
 from langchain.callbacks.tracers import ConsoleCallbackHandler
 
 # Tools
+import os
 from dataclasses import dataclass
 
 # MyLibrary
@@ -32,7 +34,7 @@ def _print_articles(articles: List[SearchArticle]) -> None:
         print(f"Search_Word: {article.search_word} \nTitle: {article.title} \nPrint_Contents: {article.html_content} \n")
 
 
-def _summarize_each_html_contents(llm: ChatOpenAI, articles: List[SearchArticle], summary_word_count: int) -> List[SearchArticle]:
+def _summarize_each_html_contents(llm: ChatOpenAI|ChatAnthropic, articles: List[SearchArticle], summary_word_count: int) -> List[SearchArticle]:
     prompt = summarize_pmt()
     output_parser = StrOutputParser()
     chain = prompt | llm | output_parser
@@ -56,7 +58,7 @@ def _integrate_search_articles(articles: List[SearchArticle]) -> IntegratedSearc
     return summarized_article
 
 
-def _convert_integrated_search_article_into_blog_posting(llm: ChatOpenAI, integrated_search_article: IntegratedSearchArticle, comment_num: int) -> BlogPosting:
+def _convert_integrated_search_article_into_blog_posting(llm: ChatOpenAI|ChatAnthropic, integrated_search_article: IntegratedSearchArticle, comment_num: int) -> BlogPosting:
     prompt_class = MakeConversationPrompt()
     prompt = prompt_class.pmt_tmpl()
     chain_input = prompt_class.variables(integrated_search_article.search_word, integrated_search_article.contents, "ordinary", comment_num)
@@ -68,7 +70,7 @@ def _convert_integrated_search_article_into_blog_posting(llm: ChatOpenAI, integr
     return BlogPosting(integrated_search_article.search_word, resp_title, resp_contents)
 
 
-def _make_title_from_contents(llm: ChatOpenAI, contents: str) -> str:
+def _make_title_from_contents(llm: ChatOpenAI|ChatAnthropic, contents: str) -> str:
     prompt_class = MakeTitlePrompt()
     prompt = prompt_class.pmt_tmpl()
     chain_input = prompt_class.variables(article_contents=contents)
@@ -78,11 +80,22 @@ def _make_title_from_contents(llm: ChatOpenAI, contents: str) -> str:
     return llm_resp
 
 
+def _create_llm_model() -> ChatOpenAI | ChatAnthropic:
+    use_model = os.environ["LLM_MODEL_NAME"]
+    if use_model == "GPT":
+        # 環境変数OPENAI_API_KEYを参照します。
+        llm = ChatOpenAI(model_name="gpt-4-0125-preview", temperature=0.7, request_timeout=180)
+    elif use_model == "CLAUDE":
+        # 環境変数ANTHROPIC_API_KEYを参照します。
+        llm = ChatAnthropic(model_name="claude-3-haiku-20240307")
+    return llm
+
+
 def convert_search_articles_into_blog_posting(articles: List[SearchArticle], summary_word_count: int = 1000, comment_num: int = 25, need_summary: bool = False) -> BlogPosting:
     """
     summary_word_count: 記事要約の文字数。この文字数*要約記事数（だいたい3くらい）がLLMに入力される。
     """
-    llm = ChatOpenAI(model_name="gpt-4-0125-preview", temperature=0.7, request_timeout=180)
+    llm = _create_llm_model()
     each_articles = _summarize_each_html_contents(llm, articles, summary_word_count) if need_summary else articles
     _print_articles(each_articles)
     integrated = _integrate_search_articles(each_articles)
