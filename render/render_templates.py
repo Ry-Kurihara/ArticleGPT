@@ -72,6 +72,6 @@ def render_summarized_search_article(article: BlogPosting):
 if __name__ == "__main__":
     # デバッグ用：python -m render.render_templates
     # プロダクトでは関数呼び出しから使うため、ここは実行されない
-    render = SecondChFormatter("2ch")
-    tpl_file_name = "Sennheiser True Wireless 4の音質と価値を徹底評価：ユーザーの声から"
+    render = QiitaFormatter("qiita")
+    tpl_file_name = "2024年東京の桜開花予想とお花見計画に対する期待と懸念"
     render.render(tpl_file_name)
