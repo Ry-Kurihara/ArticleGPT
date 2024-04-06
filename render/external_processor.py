@@ -1,4 +1,4 @@
-import os, time
+import os
 from amazon_paapi import AmazonApi
 from amazon_paapi.models import SearchResult
 
@@ -15,7 +15,6 @@ def _create_amazon_instance_from_env() -> AmazonApi:
 def process_item(item: str) -> str:
     # 商品名からアマゾンPA-APIのSearchItemsオペレーションを使用してASINを取得し、WPのAmazonJSプラグインのショートコードを生成する
     amazon = _create_amazon_instance_from_env()
-    time.sleep(2) # Rate limit対策
     search_result: SearchResult = amazon.search_items(keywords=item, item_count=5) # HACK: prime出品のみ等、信頼度の高い商品のみに絞りたい
     first_item_asin = search_result.items[0].asin
     return f"[amazonjs asin='{first_item_asin}' locale='JP' title={item}]"
