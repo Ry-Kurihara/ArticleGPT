@@ -61,7 +61,7 @@ def _integrate_search_articles(articles: List[SearchArticle]) -> IntegratedSearc
 def _convert_integrated_search_article_into_blog_posting(llm: ChatOpenAI|ChatAnthropic, integrated_search_article: IntegratedSearchArticle, comment_num: int) -> BlogPosting:
     prompt_class = MakeConversationPrompt()
     prompt = prompt_class.pmt_tmpl()
-    chain_input = prompt_class.variables(integrated_search_article.search_word, integrated_search_article.contents, "ordinary", comment_num)
+    chain_input = prompt_class.variables(integrated_search_article.search_word, integrated_search_article.contents, "nan_j", comment_num)
     
     chain = prompt | llm | StrOutputParser()
     console = {'callbacks': [ConsoleCallbackHandler()]} # HACK: set_verbose(True)が効かないためこちらで代用中
