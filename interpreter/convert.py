@@ -4,7 +4,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain.callbacks.tracers import ConsoleCallbackHandler
 
 # Tools
-import os
+import os, time
 from dataclasses import dataclass
 
 # MyLibrary
@@ -61,7 +61,8 @@ def _integrate_search_articles(articles: List[SearchArticle]) -> IntegratedSearc
 def _convert_integrated_search_article_into_blog_posting(llm: ChatOpenAI|ChatAnthropic, integrated_search_article: IntegratedSearchArticle, comment_num: int) -> BlogPosting:
     prompt_class = MakeConversationPrompt()
     prompt = prompt_class.pmt_tmpl()
-    chain_input = prompt_class.variables(integrated_search_article.search_word, integrated_search_article.contents, "nan_j", comment_num)
+    now_time_str = time.strftime('%Y/%m/%d %H:%M:%S', time.localtime())
+    chain_input = prompt_class.variables(integrated_search_article.search_word, integrated_search_article.contents, "nan_j", comment_num, now_time_str)
     
     chain = prompt | llm | StrOutputParser()
     console = {'callbacks': [ConsoleCallbackHandler()]} # HACK: set_verbose(True)が効かないためこちらで代用中

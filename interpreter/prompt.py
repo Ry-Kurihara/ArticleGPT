@@ -20,7 +20,7 @@ class MakeConversationPrompt:
         chat_pmt = ChatPromptTemplate.from_messages([sys_pmt, human_pmt])
         return chat_pmt
     
-    def variables(self, search_word: str, integrated_summary: str, personality: str = "nan_j", comments_count: int = 10) -> dict[str]:
+    def variables(self, search_word: str, integrated_summary: str, personality: str = "nan_j", comments_count: int = 10, now_time: str = '2023/11/11 11:11:11') -> dict[str]:
         with open("interpreter/my_prompts/custom_instructions.txt", "r") as f:
             custom_instructions = f.read()
         return {
@@ -29,6 +29,7 @@ class MakeConversationPrompt:
             "personality": get_personality_details(personality),
             "comments_count": comments_count,
             "custom_instructions": custom_instructions,
+            "now_time": now_time,
         }
 
 class MakeTitlePrompt:
