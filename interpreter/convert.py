@@ -84,7 +84,7 @@ def _create_llm_model() -> ChatOpenAI | ChatAnthropic:
     use_model = os.environ["LLM_MODEL_NAME"]
     if use_model == "GPT":
         # 環境変数OPENAI_API_KEYを参照します。
-        llm = ChatOpenAI(model_name="gpt-4-0125-preview", temperature=0.7, request_timeout=180)
+        llm = ChatOpenAI(model_name="gpt-4o", temperature=0.7, request_timeout=180)
     elif use_model == "CLAUDE":
         # 環境変数ANTHROPIC_API_KEYを参照します。
         llm = ChatAnthropic(model_name="claude-3-haiku-20240307")
