@@ -106,6 +106,7 @@ def convert_search_articles_into_blog_posting(articles: List[SearchArticle], sum
 
 if __name__ == '__main__':
     # デバッグ用：python -m interpreter.convert
+    # from langchain.globals import set_debug, set_verbose
     # set_debug(True) # set_verbose(True) or set_debug(True)
     sa = SearchArticle(search_word="今日の天気", title="気象庁 天気予報", html_content="<p>今日は晴れです。</p>")
     # _summarize_each_html_contents([sa, sa], 1000)
