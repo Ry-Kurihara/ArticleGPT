@@ -4,7 +4,7 @@ export CSE_ID=$(op item get Google_Search_API --fields CSE_ID)
 # 記事内容の生成（interpreter）
 export LLM_MODEL_NAME="GPT" # GPT or CLAUDE
 export ANTHROPIC_API_KEY=$(op item get Anthropic_API --fields 認証情報)
-export OPENAI_API_KEY=$(op item get OpenAI_API --fields 認証情報)
+export OPENAI_API_KEY=$(op item get OpenAI_API_my_article_gpt --fields 認証情報)
 export LANGCHAIN_TRACING_V2=true # langsmithでログを取るかどうか
 export LANGCHAIN_API_KEY=$(op item get LangChain_API --fields 認証情報)
 export LANGCHAIN_PROJECT="ArticleGPT" # langsmithのUI上でログが格納されるプロジェクト名
